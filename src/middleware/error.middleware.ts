@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import ErrorHandler from "../utils/ErrorHandler.js";
+import ErrorHandler from "../utils/ErrorHandler";
 import { NextFunction } from "connect";
-import httpStatus from "http-status";
 
 export const errorMiddleware = async (
   error: ErrorHandler,
@@ -12,13 +11,13 @@ export const errorMiddleware = async (
   error.message = error.message || "Internal Server Error";
   error.statusCode = error.statusCode || 500;
 
-  if (error.message === "jwt expired") {
+  if (error.message === "jwt expired" || error.message === "jwt malformed") {
     error.message = "Please login again.";
-    error.statusCode = httpStatus.UNAUTHORIZED;
+    error.statusCode = 401;
   }
 
   res.status(error.statusCode).json({
     success: false,
-    message: error.statusCode,
+    message: error.message,
   });
 };
