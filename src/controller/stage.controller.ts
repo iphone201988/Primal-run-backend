@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { SUCCESS, TryCatch, getFiles } from "../utils/helper";
+import { SUCCESS, TryCatch, completeUrls, getFiles } from "../utils/helper";
 import { AddStageRequest, GetStageRequest } from "../../types/API/Stage/types";
-import PlanStage from "../model/stage.model";
+import Stage from "../model/stage.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { getPlanById } from "../services/plan.services";
 import { gameTypeEnums, genderEnums } from "../utils/enum";
+import Results from "../model/results.model";
 
 export const addStage = TryCatch(
   async (
@@ -25,24 +26,26 @@ export const addStage = TryCatch(
       isPremium,
       type,
       gender,
+      level,
+      unlockedByDefault,
     } = req.body;
 
     const plan = await getPlanById(planId);
 
     const files = getFiles(req, ["image"]);
 
-    const stage = await PlanStage.findOne({
+    const stage = await Stage.findOne({
       planId,
       title,
       distance,
       duration,
       speed,
+      level,
     });
 
-    if (stage)
-      return next(new ErrorHandler("Plan stage is already exists", 400));
+    if (stage) return next(new ErrorHandler("Plan stage already exists", 400));
 
-    const newStage = await PlanStage.create({
+    const newStage = await Stage.create({
       planId,
       title,
       description,
@@ -55,6 +58,8 @@ export const addStage = TryCatch(
       isPremium,
       type,
       gender,
+      level,
+      unlockedByDefault,
       image: files.image[0],
     });
 
@@ -92,13 +97,23 @@ const getStageById = TryCatch(
   async (req: Request<GetStageRequest>, res: Response, next: NextFunction) => {
     const { stageId } = req.params;
 
-    const stage = await PlanStage.findOne({ _id: stageId }).select(
-      "-createdAt -updatedAt -__v"
-    );
+    const stage = await Stage.findOne({ _id: stageId })
+      .select("-createdAt -updatedAt -__v")
+      .lean();
 
     if (!stage) return next(new ErrorHandler("Stage not found", 400));
 
-    return SUCCESS(res, 200, undefined, { data: stage });
+    const previousResults = await Results.find({ stageId })
+      .select("score createdAt distance duration speed")
+      .lean();
+
+    const finalData = {
+      ...stage,
+      image: process.env.BACKEND_URL + stage.image,
+      previousResults: previousResults ? previousResults : [],
+    };
+
+    return SUCCESS(res, 200, undefined, { data: finalData });
   }
 );
 

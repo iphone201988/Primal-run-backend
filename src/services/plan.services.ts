@@ -9,3 +9,13 @@ export const getPlanById = async (planId: string): Promise<PlanModel> => {
 
   return plan;
 };
+
+export const unlockStages = (stages: any, unlockedStages: any) => {
+  return stages.map((stage: any) => ({
+    ...stage,
+    isUnlocked: unlockedStages.some(
+      (unlockedStageId: string) =>
+        stage._id.toString() == unlockedStageId.toString()
+    ),
+  }));
+};

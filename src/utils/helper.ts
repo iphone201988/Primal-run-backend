@@ -39,6 +39,7 @@ export const getFiles = (req: Request, fileNames: Array<string>) => {
         let path = "";
         if (file.mimetype.includes("audio")) path = "/uploads/sounds/";
         if (file.mimetype.includes("image")) path = "/uploads/images/";
+        if (file.mimetype.includes("video")) path = "/uploads/videos/";
         return path + file.filename;
       });
     }
@@ -48,18 +49,32 @@ export const getFiles = (req: Request, fileNames: Array<string>) => {
   return null;
 };
 
-function convertKmToMiles(data: any, keys: Array<string>) {
+const convertKmToMiles = (data: any, keys: Array<string>) => {
   const conversionFactor = 0.621371; // 1 km = 0.621371 miles
 
   const finalData = data.map((item: any) => {
     keys.forEach((keyName: string) => {
       item = {
         ...item,
-        keyName: item[keyName] * conversionFactor,
+        [keyName]: item[keyName] * conversionFactor,
       };
     });
     return item;
   });
 
   return finalData;
-}
+};
+
+export const completeUrls = (data: any, keys: string[]) => {
+  const finalData = data.map((item: any) => {
+    keys.forEach((keyName: string) => {
+      item = {
+        ...item,
+        [keyName]: process.env.BACKEND_URL + item[keyName],
+      };
+    });
+    return item;
+  });
+
+  return finalData;
+};

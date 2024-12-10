@@ -1,8 +1,8 @@
 import { Schema, model } from "mongoose";
 import { gameTypeEnums, genderEnums } from "../utils/enum";
-import { PlanStageModel } from "../../types/Database/types";
+import { StageModel } from "../../types/Database/types";
 
-const planStagesSchema = new Schema<PlanStageModel>(
+const stagesSchema = new Schema<StageModel>(
   {
     planId: { type: Schema.Types.ObjectId, ref: "Plans" },
     title: { type: String },
@@ -14,7 +14,9 @@ const planStagesSchema = new Schema<PlanStageModel>(
     isSprint: { type: Boolean },
     sprintCount: { type: Number },
     sprintDistanceInMeter: { type: Number },
+    level: { type: Number },
     isPremium: { type: Boolean, default: true },
+    unlockedByDefault: { type: Boolean, default: false },
     type: {
       type: Number,
       enum: [gameTypeEnums.EASY, gameTypeEnums.NORMAL, gameTypeEnums.HARD],
@@ -27,5 +29,5 @@ const planStagesSchema = new Schema<PlanStageModel>(
   { timestamps: true }
 );
 
-const PlanStage = model("PlanStages", planStagesSchema);
-export default PlanStage;
+const Stage = model("PlanStages", stagesSchema);
+export default Stage;

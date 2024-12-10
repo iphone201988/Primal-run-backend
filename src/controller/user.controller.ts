@@ -1,6 +1,7 @@
 import { SUCCESS, TryCatch, getFiles } from "../utils/helper";
 import User from "../model/user.model";
 import {
+  addPlansForUser,
   generateJsonWebToken,
   generateRandomJti,
   getUserById,
@@ -12,6 +13,7 @@ import {
   SocialLoginRequest,
   UpdateUserRequest,
 } from "../../types/API/User/types";
+import UserProgress from "../model/userProgress.model";
 
 const socialLogin = TryCatch(
   async (
@@ -60,6 +62,10 @@ const socialLogin = TryCatch(
     }
 
     await user.save();
+
+    const userProgress = await UserProgress.findOne({ userId: user._id });
+    if (!userProgress) await addPlansForUser(user);
+
     user = user.toObject();
     const token = generateJsonWebToken({ id: user._id, jti });
 

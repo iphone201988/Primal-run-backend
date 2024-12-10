@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { SUCCESS, TryCatch, getFiles } from "../utils/helper";
+import { SUCCESS, TryCatch, completeUrls, getFiles } from "../utils/helper";
 import { AddPlanRequest, GetPlanRequest } from "../../types/API/Plan/types";
 import Plans from "../model/plan.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { getUserById } from "../services/user.services";
 import { genderEnums } from "../utils/enum";
+import UserProgress from "../model/userProgress.model";
+import { unlockStages } from "../services/plan.services";
 
 export const addPlan = TryCatch(
   async (
@@ -46,7 +48,7 @@ export const getAllPlans = TryCatch(
       .select("_id title description distancePlan image isPremium")
       .lean();
 
-    const finalData = plans.map((plan) => ({
+    const finalData = completeUrls(plans, ["image"]).map((plan: any) => ({
       ...plan,
       progress: 0,
     }));
@@ -81,20 +83,49 @@ const getPlanById = TryCatch(
       )
       .populate(
         easyStages,
-        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter"
+        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
       )
       .populate(
         normalStages,
-        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter"
+        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
       )
       .populate(
         hardStages,
-        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter"
-      );
+        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
+      )
+      .sort("level")
+      .lean();
 
     if (!plan) return next(new ErrorHandler("Plan not found", 400));
 
-    return SUCCESS(res, 200, undefined, { data: plan });
+    const userProgress = await UserProgress.findOne({ userId });
+
+    // const finalData = completeUrls(plan, ["image"]);
+    let finalData = {
+      ...plan,
+      image: process.env.BACKEND_URL + plan.image,
+      [easyStages]: completeUrls(plan[easyStages], ["image"]),
+      [normalStages]: completeUrls(plan[normalStages], ["image"]),
+      [hardStages]: completeUrls(plan[hardStages], ["image"]),
+    };
+
+    finalData = {
+      ...finalData,
+      [easyStages]: unlockStages(
+        finalData[easyStages],
+        userProgress.unlockedStages[easyStages]
+      ),
+      [normalStages]: unlockStages(
+        finalData[normalStages],
+        userProgress.unlockedStages[normalStages]
+      ),
+      [hardStages]: unlockStages(
+        finalData[hardStages],
+        userProgress.unlockedStages[hardStages]
+      ),
+    };
+
+    return SUCCESS(res, 200, undefined, { data: finalData });
   }
 );
 

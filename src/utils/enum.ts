@@ -32,3 +32,14 @@ export const resultType = {
   STAGED: 1,
   FREE_RUN: 2,
 };
+export const badgeType = {
+  ELEPHANT: 1,
+  BULL: 2,
+  GORILLA: 3,
+  BEAR: 4,
+  DEER: 5,
+  TIGER: 6,
+  RHINO: 7,
+  LION: 8,
+  RAPTOR: 9,
+};

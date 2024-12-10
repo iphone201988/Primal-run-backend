@@ -12,14 +12,14 @@ const saveResultsSchema = {
         "string.pattern.base": `Plan Id must be a valid ObjectId`,
         "any.required": `Plan Id is required.`,
       }),
-    planStageId: Joi.string()
+    stageId: Joi.string()
       .required()
       .pattern(/^[0-9a-fA-F]{24}$/)
       .messages({
-        "string.base": `Plan Stage Id should be a type of text`,
-        "string.empty": `Plan Stage Id cannot be empty`,
-        "string.pattern.base": `Plan Stage Id must be a valid ObjectId`,
-        "any.required": `Plan Stage Id is required.`,
+        "string.base": `Stage Id should be a type of text`,
+        "string.empty": `Stage Id cannot be empty`,
+        "string.pattern.base": `Stage Id must be a valid ObjectId`,
+        "any.required": `Stage Id is required.`,
       }),
     distance: Joi.number().required().messages({
       "number.base": "Distance must be a number.",

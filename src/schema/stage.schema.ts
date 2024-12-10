@@ -32,6 +32,10 @@ const addStageSchema = {
       "number.base": "Speed must be a number.",
       "any.required": "Speed is a mandatory field.",
     }),
+    level: Joi.number().required().messages({
+      "number.base": "Level must be a number.",
+      "any.required": "Level is a mandatory field.",
+    }),
     gender: Joi.number()
       .valid(...Object.values(genderEnums))
       .required()
@@ -60,8 +64,7 @@ const addStageSchema = {
       })
       .messages({
         "number.base": "Sprint Count must be a number.",
-        "any.required":
-          "Sprint Count is a mandatory field when Sprint is true.",
+        "any.required": "Sprint Count is a mandatory field.",
       }),
     sprintDistanceInMeter: Joi.number()
       .when("isSprint", {
@@ -71,13 +74,16 @@ const addStageSchema = {
       })
       .messages({
         "number.base": "Sprint Distance must be a number.",
-        "any.required":
-          "Sprint Distance is a mandatory field when Sprint is true.",
+        "any.required": "Sprint Distance is a mandatory field.",
       }),
 
     isPremium: Joi.boolean().required().messages({
       "boolean.base": "Premium must be a boolean value.",
       "any.required": "Premium is a mandatory field.",
+    }),
+    unlockedByDefault: Joi.boolean().required().messages({
+      "boolean.base": " Unlock value must be a boolean value.",
+      "any.required": "Unlock value is a mandatory field.",
     }),
   }),
 };

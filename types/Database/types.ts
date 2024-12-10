@@ -1,4 +1,5 @@
 import { Document, Schema } from "mongoose";
+import { IsSchemaTypeFromBuiltinClass } from "mongoose/types/inferschematype";
 
 type LocationType = {
   type: "Point";
@@ -49,7 +50,7 @@ export interface PlanModel extends Document {
   updatedAt: Date;
 }
 
-export interface PlanStageModel extends Document {
+export interface StageModel extends Document {
   planId: Schema.Types.ObjectId;
   title: string;
   description: string;
@@ -60,7 +61,9 @@ export interface PlanStageModel extends Document {
   isSprint: boolean;
   sprintCount: number;
   sprintDistanceInMeter: number;
+  level: number;
   isPremium: boolean;
+  unlockedByDefault: boolean;
   type: number;
   gender: number;
   createdAt: Date;
@@ -70,7 +73,7 @@ export interface PlanStageModel extends Document {
 export interface ResultsModel extends Document {
   userId: Schema.Types.ObjectId;
   planId: Schema.Types.ObjectId;
-  planStageId: Schema.Types.ObjectId;
+  stageId: Schema.Types.ObjectId;
   videoLink: string;
   distance: number;
   duration: number;
@@ -78,6 +81,26 @@ export interface ResultsModel extends Document {
   score: number;
   resultStatus: number;
   resultType: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface BadgeModel extends Document {
+  badgeImage: string;
+  badgeType: number;
+}
+
+export interface UserProgressModel extends Document {
+  userId: Schema.Types.ObjectId;
+  planId: Schema.Types.ObjectId;
+  unlockedStages: {
+    easyStagesForMale: Array<any>;
+    normalStagesForMale: Array<any>;
+    hardStagesForMale: Array<any>;
+    easyStagesForFemale: Array<any>;
+    normalStagesForFemale: Array<any>;
+    hardStagesForFemale: Array<any>;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

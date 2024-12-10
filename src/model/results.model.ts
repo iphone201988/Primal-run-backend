@@ -6,7 +6,7 @@ const resultsSchema = new Schema<ResultsModel>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User" },
     planId: { type: Schema.Types.ObjectId, ref: "Plans" },
-    planStageId: { type: Schema.Types.ObjectId, ref: "PlanStages" },
+    stageId: { type: Schema.Types.ObjectId, ref: "PlanStages" },
     videoLink: { type: String },
     distance: { type: Number },
     duration: { type: Number },

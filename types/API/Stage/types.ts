@@ -9,8 +9,10 @@ export type AddStageRequest = {
   sprintCount: number;
   sprintDistanceInMeter: number;
   isPremium: boolean;
+  unlockedByDefault: boolean;
   type: number;
   gender: number;
+  level: number;
 };
 
 export type GetStageRequest = {

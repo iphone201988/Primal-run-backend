@@ -1,6 +1,6 @@
 export type SaveResultsRequest = {
   planId: string;
-  planStageId: string;
+  stageId: string;
   distance: number;
   duration: number;
   averageSpeed: number;
