@@ -3,6 +3,9 @@ export type AddPlanRequest = {
   description: string;
   distancePlan: number;
   isPremium: string;
+  categoryType: number;
+  to: number;
+  from: number;
 };
 
 export type GetPlanRequest = {

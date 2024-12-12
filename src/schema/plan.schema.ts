@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { planCategoryEnums } from "../utils/enum";
 
 const addPlanSchema = {
   body: Joi.object({
@@ -17,6 +18,22 @@ const addPlanSchema = {
     isPremium: Joi.boolean().required().messages({
       "boolean.base": "Premium must be a boolean value.",
       "any.required": "Premium is a mandatory field.",
+    }),
+    categoryType: Joi.number()
+      .valid(...Object.values(planCategoryEnums))
+      .required()
+      .messages({
+        "number.base": "Category Type must be a number.",
+        "any.required": "Category Type is a mandatory field.",
+        "any.only": "Invalid value for Category Type.",
+      }),
+    to: Joi.number().required().messages({
+      "number.base": "Category Distance must be a number.",
+      "any.required": "Category Distance is a mandatory field.",
+    }),
+    from: Joi.number().required().messages({
+      "number.base": "Category Distance must be a number.",
+      "any.required": "Category Distance is a mandatory field.",
     }),
   }),
 };

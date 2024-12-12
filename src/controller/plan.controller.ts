@@ -10,7 +10,11 @@ import { AddPlanRequest, GetPlanRequest } from "../../types/API/Plan/types";
 import Plans from "../model/plan.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { getUserById } from "../services/user.services";
-import { genderEnums, measurementUnitEnums } from "../utils/enum";
+import {
+  genderEnums,
+  measurementUnitEnums,
+  planCategoryEnums,
+} from "../utils/enum";
 import UserProgress from "../model/userProgress.model";
 import { unlockStages } from "../services/plan.services";
 
@@ -20,7 +24,15 @@ export const addPlan = TryCatch(
     res: Response,
     next: NextFunction
   ) => {
-    const { title, description, distancePlan, isPremium } = req.body;
+    const {
+      title,
+      description,
+      distancePlan,
+      isPremium,
+      categoryType,
+      to,
+      from,
+    } = req.body;
     const files = getFiles(req, [
       "image",
       "footStepsSounds",
@@ -42,6 +54,11 @@ export const addPlan = TryCatch(
       roarSounds: files.roarSounds,
       breathingSounds: files.breathingSounds,
       attackSounds: files.attackSounds,
+      category: {
+        type: categoryType,
+        to,
+        from,
+      },
     });
 
     return SUCCESS(res, 201, "New plan created successfully");
@@ -51,7 +68,7 @@ export const addPlan = TryCatch(
 export const getAllPlans = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const plans = await Plans.find({})
-      .select("_id title description distancePlan image isPremium")
+      .select("_id title description distancePlan image isPremium category")
       .lean();
 
     const finalData = completeUrls(plans, ["image"]).map((plan: any) => ({
@@ -59,7 +76,20 @@ export const getAllPlans = TryCatch(
       progress: 0,
     }));
 
-    return SUCCESS(res, 200, undefined, { data: finalData });
+    const groupedPlans = finalData.reduce((acc: any, plan: any) => {
+      const categoryKey = Object.keys(planCategoryEnums).find(
+        (key) => planCategoryEnums[key] == plan.category.type
+      );
+      if (!acc[categoryKey]) {
+        acc[categoryKey] = [];
+      }
+      acc[categoryKey].push(plan);
+      return acc;
+    }, {});
+
+    console.log("groupedPlans:::::", groupedPlans);
+
+    return SUCCESS(res, 200, undefined, { data: groupedPlans });
   }
 );
 

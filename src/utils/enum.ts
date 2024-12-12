@@ -43,3 +43,8 @@ export const badgeType = {
   LION: 8,
   RAPTOR: 9,
 };
+export const planCategoryEnums = {
+  THE_MARCH_OF_THE_GIANTS: 1,
+  THE_HUNT_FOR_SPEED: 2,
+  THE_ULTIMATE_PURSUIT: 3,
+};

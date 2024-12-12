@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { PlanModel } from "../../types/Database/types";
+import { planCategoryEnums } from "../utils/enum";
 
 const planSchema = new Schema<PlanModel>(
   {
@@ -19,7 +20,7 @@ const planSchema = new Schema<PlanModel>(
     hardStagesForFemale: [{ type: Schema.Types.ObjectId, ref: "PlanStages" }],
     isPremium: { type: Boolean, default: true },
     category: {
-      type: { type: Number },
+      type: { type: Number, enum: [...Object.values(planCategoryEnums)] },
       from: { type: Number },
       to: { type: Number },
     },

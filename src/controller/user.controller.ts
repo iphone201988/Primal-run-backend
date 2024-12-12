@@ -150,7 +150,7 @@ const getUserProfile = TryCatch(
     let { user } = req;
     user = user.toObject();
     return SUCCESS(res, 200, undefined, {
-      data: {
+      user: {
         ...user,
         location: undefined,
         __v: undefined,
