@@ -21,6 +21,12 @@ userRoutes.put(
 );
 
 userRoutes.get(
+  "/getUserProfile",
+  authenticationMiddleware,
+  userController.getUserProfile
+);
+
+userRoutes.get(
   "/getMyActivities",
   authenticationMiddleware,
   userController.getMyActivities

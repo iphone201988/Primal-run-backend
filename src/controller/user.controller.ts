@@ -147,6 +147,25 @@ const updateUserData = TryCatch(
   }
 );
 
+const getUserProfile = TryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    let { user } = req;
+    user = user.toObject();
+    return SUCCESS(res, 200, undefined, {
+      data: {
+        ...user,
+        location: undefined,
+        __v: undefined,
+        deviceToken: undefined,
+        deviceType: undefined,
+        jti: undefined,
+        createdAt: undefined,
+        updatedAt: undefined,
+      },
+    });
+  }
+);
+
 const logoutUser = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req;
@@ -204,4 +223,5 @@ export default {
   updateUserData,
   logoutUser,
   getMyActivities,
+  getUserProfile,
 };
