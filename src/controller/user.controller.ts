@@ -81,6 +81,9 @@ const socialLogin = TryCatch(
       user: {
         ...user,
         isUserExists,
+        profileImage: user?.profileImage
+          ? process.env.BACKEND_URL + user.profileImage
+          : undefined,
         token,
         jti: undefined,
         createdAt: undefined,
@@ -113,7 +116,7 @@ const updateUserData = TryCatch(
 
     if (req.files) {
       const image = getFiles(req, ["profileImage"]);
-      if(image?.profileImage) userExists.profileImage = image.profileImage[0];
+      if (image?.profileImage) userExists.profileImage = image.profileImage[0];
     }
 
     if (lat && lng) {
