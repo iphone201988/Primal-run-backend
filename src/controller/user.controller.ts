@@ -207,18 +207,20 @@ const getMyActivities = TryCatch(
 
     let finalData = {
       ...results[0],
-      previousResults: completeUrls(results[0].previousResults, ["videoLink"]),
+      previousResults: results[0]?.previousResults
+        ? completeUrls(results[0].previousResults, ["videoLink"])
+        : [],
     };
 
     if (user.unitOfMeasure == measurementUnitEnums.MILES) {
       finalData = {
         ...finalData,
-        totalDistance: parseFloat(
-          (finalData.totalDistance * 0.621371).toFixed(2)
-        ),
-        previousResults: convertKmToMiles(finalData.previousResults, [
-          "distance",
-        ]),
+        totalDistance: finalData?.totalDistance
+          ? parseFloat((finalData.totalDistance * 0.621371).toFixed(2))
+          : 0,
+        previousResults: finalData?.previousResults
+          ? convertKmToMiles(finalData.previousResults, ["distance"])
+          : [],
       };
     }
 
