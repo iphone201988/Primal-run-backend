@@ -7,11 +7,13 @@ const resultsSchema = new Schema<ResultsModel>(
     userId: { type: Schema.Types.ObjectId, ref: "User" },
     planId: { type: Schema.Types.ObjectId, ref: "Plans" },
     stageId: { type: Schema.Types.ObjectId, ref: "PlanStages" },
+    badgeId: { type: Schema.Types.ObjectId, ref: "Badge" },
     videoLink: { type: String },
     distance: { type: Number },
     duration: { type: Number },
     averageSpeed: { type: Number },
     score: { type: Number },
+    isBestScore: { type: Boolean },
     resultStatus: {
       type: Number,
       enum: [resultStatus.COMPLETED, resultStatus.FAILED],

@@ -21,14 +21,14 @@ const socialLoginSchema = {
       "string.empty": "Name is required.",
       "any.required": "Name is a mandatory field.",
     }),
-    gender: Joi.number()
-      .valid(...Object.values(genderEnums))
-      .required()
-      .messages({
-        "any.only": "Invalid value for Gender.",
-        "string.empty": "Gender is required.",
-        "any.required": "Gender is a mandatory field.",
-      }),
+    // gender: Joi.number()
+    //   .valid(...Object.values(genderEnums))
+    //   .required()
+    //   .messages({
+    //     "any.only": "Invalid value for Gender.",
+    //     "string.empty": "Gender is required.",
+    //     "any.required": "Gender is a mandatory field.",
+    //   }),
     lat: Joi.number().optional().messages({
       "number.base": "Latitude must be a number.",
     }),

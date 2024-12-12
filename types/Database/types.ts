@@ -52,6 +52,7 @@ export interface PlanModel extends Document {
 
 export interface StageModel extends Document {
   planId: Schema.Types.ObjectId;
+  badgeId: Schema.Types.ObjectId;
   title: string;
   description: string;
   image: string;
@@ -63,6 +64,7 @@ export interface StageModel extends Document {
   sprintDistanceInMeter: number;
   level: number;
   isPremium: boolean;
+  isBossStage: boolean;
   unlockedByDefault: boolean;
   type: number;
   gender: number;
@@ -74,11 +76,13 @@ export interface ResultsModel extends Document {
   userId: Schema.Types.ObjectId;
   planId: Schema.Types.ObjectId;
   stageId: Schema.Types.ObjectId;
+  badgeId: Schema.Types.ObjectId;
   videoLink: string;
   distance: number;
   duration: number;
   averageSpeed: number;
   score: number;
+  isBestScore: boolean;
   resultStatus: number;
   resultType: number;
   createdAt: Date;
@@ -101,6 +105,14 @@ export interface UserProgressModel extends Document {
     normalStagesForFemale: Array<any>;
     hardStagesForFemale: Array<any>;
   };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AchievementsModel extends Document {
+  userId: Schema.Types.ObjectId;
+  badgeId: Schema.Types.ObjectId;
+  score: number;
   createdAt: Date;
   updatedAt: Date;
 }

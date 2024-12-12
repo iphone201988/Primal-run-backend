@@ -5,6 +5,7 @@ import { StageModel } from "../../types/Database/types";
 const stagesSchema = new Schema<StageModel>(
   {
     planId: { type: Schema.Types.ObjectId, ref: "Plans" },
+    badgeId: { type: Schema.Types.ObjectId, ref: "Badge" },
     title: { type: String },
     description: { type: String },
     image: { type: String },
@@ -16,6 +17,7 @@ const stagesSchema = new Schema<StageModel>(
     sprintDistanceInMeter: { type: Number },
     level: { type: Number },
     isPremium: { type: Boolean, default: true },
+    isBossStage: { type: Boolean, default: false },
     unlockedByDefault: { type: Boolean, default: false },
     type: {
       type: Number,

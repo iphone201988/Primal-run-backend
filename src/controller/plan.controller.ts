@@ -1,10 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { SUCCESS, TryCatch, completeUrls, getFiles } from "../utils/helper";
+import {
+  SUCCESS,
+  TryCatch,
+  completeUrls,
+  convertKmToMiles,
+  getFiles,
+} from "../utils/helper";
 import { AddPlanRequest, GetPlanRequest } from "../../types/API/Plan/types";
 import Plans from "../model/plan.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { getUserById } from "../services/user.services";
-import { genderEnums } from "../utils/enum";
+import { genderEnums, measurementUnitEnums } from "../utils/enum";
 import UserProgress from "../model/userProgress.model";
 import { unlockStages } from "../services/plan.services";
 
@@ -59,10 +65,9 @@ export const getAllPlans = TryCatch(
 
 const getPlanById = TryCatch(
   async (req: Request<GetPlanRequest>, res: Response, next: NextFunction) => {
-    const { userId } = req;
+    const { userId, user } = req;
     const { planId } = req.params;
 
-    const user = await getUserById(userId);
     let easyStages: string, normalStages: string, hardStages: string;
 
     if (user.gender == genderEnums.MALE) {
@@ -111,19 +116,32 @@ const getPlanById = TryCatch(
 
     finalData = {
       ...finalData,
-      [easyStages]: unlockStages(
+      [easyStages]: await unlockStages(
         finalData[easyStages],
         userProgress.unlockedStages[easyStages]
       ),
-      [normalStages]: unlockStages(
+      [normalStages]: await unlockStages(
         finalData[normalStages],
         userProgress.unlockedStages[normalStages]
       ),
-      [hardStages]: unlockStages(
+      [hardStages]: await unlockStages(
         finalData[hardStages],
         userProgress.unlockedStages[hardStages]
       ),
     };
+
+    console.log("finalData::::", finalData);
+    if (user.unitOfMeasure == measurementUnitEnums.MILES) {
+      finalData = {
+        ...finalData,
+        distancePlan: parseFloat(
+          (finalData.distancePlan * 0.621371).toFixed(2)
+        ),
+        [easyStages]: convertKmToMiles(finalData[easyStages], ["distance"]),
+        [normalStages]: convertKmToMiles(finalData[normalStages], ["distance"]),
+        [hardStages]: convertKmToMiles(finalData[hardStages], ["distance"]),
+      };
+    }
 
     return SUCCESS(res, 200, undefined, { data: finalData });
   }

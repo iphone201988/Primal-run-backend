@@ -21,8 +21,15 @@ userRoutes.put(
 );
 
 userRoutes.get(
+  "/getMyActivities",
+  authenticationMiddleware,
+  userController.getMyActivities
+);
+
+userRoutes.get(
   "/logoutUser",
   authenticationMiddleware,
   userController.logoutUser
 );
+
 export default userRoutes;

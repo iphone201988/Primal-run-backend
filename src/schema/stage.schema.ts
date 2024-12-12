@@ -12,6 +12,15 @@ const addStageSchema = {
         "string.pattern.base": `Plan Id must be a valid ObjectId`,
         "any.required": `Plan Id is required.`,
       }),
+    badgeId: Joi.string()
+      .required()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .messages({
+        "string.base": `Badge Id should be a type of text`,
+        "string.empty": `Badge Id cannot be empty`,
+        "string.pattern.base": `Badge Id must be a valid ObjectId`,
+        "any.required": `Badge Id is required.`,
+      }),
     title: Joi.string().required().messages({
       "string.empty": "Title is required.",
       "any.required": "Title is a mandatory field.",

@@ -49,14 +49,14 @@ export const getFiles = (req: Request, fileNames: Array<string>) => {
   return null;
 };
 
-const convertKmToMiles = (data: any, keys: Array<string>) => {
+export const convertKmToMiles = (data: any, keys: Array<string>) => {
   const conversionFactor = 0.621371; // 1 km = 0.621371 miles
 
   const finalData = data.map((item: any) => {
     keys.forEach((keyName: string) => {
       item = {
         ...item,
-        [keyName]: item[keyName] * conversionFactor,
+        [keyName]: parseFloat((item[keyName] * conversionFactor).toFixed(2)),
       };
     });
     return item;

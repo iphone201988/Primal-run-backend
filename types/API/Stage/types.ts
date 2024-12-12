@@ -1,5 +1,6 @@
 export type AddStageRequest = {
   planId: string;
+  badgeId: string;
   title: string;
   description: string;
   distance: number;

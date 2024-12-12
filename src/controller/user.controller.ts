@@ -1,4 +1,10 @@
-import { SUCCESS, TryCatch, getFiles } from "../utils/helper";
+import {
+  SUCCESS,
+  TryCatch,
+  completeUrls,
+  convertKmToMiles,
+  getFiles,
+} from "../utils/helper";
 import User from "../model/user.model";
 import {
   addPlansForUser,
@@ -14,6 +20,9 @@ import {
   UpdateUserRequest,
 } from "../../types/API/User/types";
 import UserProgress from "../model/userProgress.model";
+import Results from "../model/results.model";
+import mongoose from "mongoose";
+import { measurementUnitEnums } from "../utils/enum";
 
 const socialLogin = TryCatch(
   async (
@@ -25,7 +34,6 @@ const socialLogin = TryCatch(
       socialId,
       email,
       name,
-      gender,
       lat,
       lng,
       dob,
@@ -35,12 +43,13 @@ const socialLogin = TryCatch(
     } = req.body;
 
     let user: UserModel = await User.findOne({ socialId, isDeleted: false });
+    let isUserExists = true;
 
     if (!user) {
+      isUserExists = false;
       user = await User.create({
         name,
         email,
-        gender,
         socialId,
         socialType,
         dob,
@@ -73,6 +82,7 @@ const socialLogin = TryCatch(
       success: true,
       user: {
         ...user,
+        isUserExists,
         token,
         jti: undefined,
         createdAt: undefined,
@@ -94,18 +104,14 @@ const updateUserData = TryCatch(
     res: Response,
     next: NextFunction
   ) => {
-    const id = req.user._id;
-
-    let userExists = await getUserById(id);
+    let { user: userExists } = req;
 
     let { gender, lat, lng, name, dob, unitOfMeasure } = req.body;
 
-    userExists.gender = gender || userExists.gender;
-    userExists.lat = lat || userExists.lat;
-    userExists.lng = lng || userExists.lng;
-    userExists.name = name || userExists.name;
-    userExists.dob = dob || userExists.dob;
-    userExists.unitOfMeasure = unitOfMeasure || userExists.unitOfMeasure;
+    if (gender) userExists.gender = gender;
+    if (name) userExists.name = name;
+    if (dob) userExists.dob = dob;
+    if (unitOfMeasure) userExists.unitOfMeasure = unitOfMeasure;
 
     if (req.files) {
       const image = getFiles(req, ["profileImage"]);
@@ -113,11 +119,15 @@ const updateUserData = TryCatch(
     }
 
     if (lat && lng) {
+      userExists.lat = lat;
+      userExists.lng = lng;
+
       userExists.location = {
         type: "Point",
         coordinates: [lng, lat],
       };
     }
+
     await userExists.save();
     userExists = userExists.toObject();
     return SUCCESS(res, 200, "User data updated successfully", {
@@ -151,8 +161,47 @@ const logoutUser = TryCatch(
   }
 );
 
+const getMyActivities = TryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId, user } = req;
+
+    const results = await Results.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+      {
+        $group: {
+          _id: "$userId",
+          totalDistance: { $sum: "$distance" },
+          totalDuration: { $sum: "$duration" },
+          activities: { $sum: 1 },
+          previousResults: { $push: "$$ROOT" },
+        },
+      },
+    ]);
+
+    let finalData = {
+      ...results[0],
+      previousResults: completeUrls(results[0].previousResults, ["videoLink"]),
+    };
+
+    if (user.unitOfMeasure == measurementUnitEnums.MILES) {
+      finalData = {
+        ...finalData,
+        totalDistance: parseFloat(
+          (finalData.totalDistance * 0.621371).toFixed(2)
+        ),
+        previousResults: convertKmToMiles(finalData.previousResults, [
+          "distance",
+        ]),
+      };
+    }
+
+    return SUCCESS(res, 200, undefined, { data: finalData });
+  }
+);
+
 export default {
   socialLogin,
   updateUserData,
   logoutUser,
+  getMyActivities,
 };

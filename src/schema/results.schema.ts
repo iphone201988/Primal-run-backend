@@ -45,6 +45,19 @@ const saveResultsSchema = {
         "any.required": "Result type is a mandatory field.",
         "any.only": "Invalid value for Result type.",
       }),
+    badgeId: Joi.string()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .when("resultType", {
+        is: resultType.FREE_RUN,
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+      })
+      .messages({
+        "string.base": `Badge Id should be a type of text.`,
+        "string.empty": `Badge Id cannot be empty.`,
+        "string.pattern.base": `Badge Id must be a valid ObjectId.`,
+        "any.required": `Badge Id is required when resultType is 2.`,
+      }),
     resultStatus: Joi.number()
       .valid(...Object.values(resultStatus))
       .required()
