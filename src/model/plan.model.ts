@@ -18,6 +18,11 @@ const planSchema = new Schema<PlanModel>(
     normalStagesForFemale: [{ type: Schema.Types.ObjectId, ref: "PlanStages" }],
     hardStagesForFemale: [{ type: Schema.Types.ObjectId, ref: "PlanStages" }],
     isPremium: { type: Boolean, default: true },
+    category: {
+      type: { type: Number },
+      from: { type: Number },
+      to: { type: Number },
+    },
   },
   { timestamps: true }
 );

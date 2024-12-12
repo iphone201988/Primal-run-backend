@@ -35,10 +35,10 @@ const socialLoginSchema = {
     lng: Joi.number().optional().messages({
       "number.base": "Longitude must be a number.",
     }),
-    dob: Joi.date().required().messages({
-      "date.base": "Date of birth must be a valid date.",
-      "any.required": "Date of birth is a mandatory field.",
-    }),
+    // dob: Joi.date().required().messages({
+    //   "date.base": "Date of birth must be a valid date.",
+    //   "any.required": "Date of birth is a mandatory field.",
+    // }),
     socialType: Joi.string()
       .required()
       .valid(...Object.values(socialTypeEnums))

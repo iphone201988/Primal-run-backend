@@ -2,8 +2,6 @@ export type SocialLoginRequest = {
   socialId: string;
   email: string;
   name: string;
-  gender: number;
-  dob: string;
   lat: number;
   lng: number;
   socialType: number;

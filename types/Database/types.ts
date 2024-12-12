@@ -46,6 +46,11 @@ export interface PlanModel extends Document {
   normalStagesForFemale: Array<any>;
   hardStagesForFemale: Array<any>;
   isPremium: boolean;
+  category: {
+    type: number;
+    from: number;
+    to: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

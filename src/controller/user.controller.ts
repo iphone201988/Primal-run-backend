@@ -36,7 +36,6 @@ const socialLogin = TryCatch(
       name,
       lat,
       lng,
-      dob,
       socialType,
       deviceToken,
       deviceType,
@@ -52,7 +51,6 @@ const socialLogin = TryCatch(
         email,
         socialId,
         socialType,
-        dob,
       });
     }
     const jti = generateRandomJti(20);
