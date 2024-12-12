@@ -113,7 +113,7 @@ const updateUserData = TryCatch(
 
     if (req.files) {
       const image = getFiles(req, ["profileImage"]);
-      userExists.profileImage = image.profileImage[0];
+      if(image?.profileImage) userExists.profileImage = image.profileImage[0];
     }
 
     if (lat && lng) {
@@ -127,10 +127,14 @@ const updateUserData = TryCatch(
     }
 
     await userExists.save();
+    console.log("userExists?.profileImage::::", userExists?.profileImage);
     userExists = userExists.toObject();
     return SUCCESS(res, 200, "User data updated successfully", {
       user: {
         ...userExists,
+        profileImage: userExists?.profileImage
+          ? process.env.BACKEND_URL + userExists.profileImage
+          : undefined,
         jti: undefined,
         createdAt: undefined,
         updatedAt: undefined,
@@ -152,6 +156,9 @@ const getUserProfile = TryCatch(
     return SUCCESS(res, 200, undefined, {
       user: {
         ...user,
+        profileImage: user?.profileImage
+          ? process.env.BACKEND_URL + user.profileImage
+          : undefined,
         location: undefined,
         __v: undefined,
         deviceToken: undefined,
