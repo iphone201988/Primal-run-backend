@@ -40,7 +40,6 @@ export const saveResults = TryCatch(
     // TODO: Based on the max score per stage
     console.log("results:::::", results);
 
-    return;
 
     const plan = await getPlanById(planId);
     const stage = await getPlanStageById(stageId);
