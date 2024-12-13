@@ -7,6 +7,7 @@ import {
 } from "../utils/helper";
 import User from "../model/user.model";
 import {
+  addInitialAchievements,
   addPlansForUser,
   generateJsonWebToken,
   generateRandomJti,
@@ -23,6 +24,7 @@ import UserProgress from "../model/userProgress.model";
 import Results from "../model/results.model";
 import mongoose from "mongoose";
 import { measurementUnitEnums } from "../utils/enum";
+import Achievements from "../model/achievements.model";
 
 const socialLogin = TryCatch(
   async (
@@ -72,6 +74,11 @@ const socialLogin = TryCatch(
 
     const userProgress = await UserProgress.findOne({ userId: user._id });
     if (!userProgress) await addPlansForUser(user);
+
+    const achievements = await Achievements.find({ userId: user._id });
+    if (!achievements || !achievements.length) {
+      await addInitialAchievements(user._id);
+    }
 
     user = user.toObject();
     const token = generateJsonWebToken({ id: user._id, jti });

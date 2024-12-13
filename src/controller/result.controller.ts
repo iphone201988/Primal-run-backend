@@ -5,10 +5,8 @@ import Results from "../model/results.model";
 import { getPlanById } from "../services/plan.services";
 import { getPlanStageById } from "../services/stage.services";
 import Stage from "../model/stage.model";
-import { getUserById } from "../services/user.services";
 import UserProgress from "../model/userProgress.model";
 import { gameTypeEnums, genderEnums } from "../utils/enum";
-import ErrorHandler from "../utils/ErrorHandler";
 import { unlockNextLevelOfStages } from "../services/result.services";
 import Achievements from "../model/achievements.model";
 
@@ -159,15 +157,27 @@ export const saveResults = TryCatch(
 
       // If Boss stage of hard stage is completed
       if (stage.isBossStage && stage.type == gameTypeEnums.HARD) {
-        const achievements = await Achievements.findOne({ userId, badgeId });
-        if (!achievements) {
+        const achievement = await Achievements.findOne({ userId, badgeId });
+
+        if (achievement) {
           const results = await Results.find({
             userId,
             planId,
             isBestScore: true,
-          });
-          // TODO: Based on the max score per stage
-          console.log("results:::::", results);
+          }).select("score");
+
+          const totalLevels = await Stage.find({
+            planId,
+            badgeId,
+            gender: user.gender,
+          }).countDocuments();
+
+          let sum = 0;
+          results.forEach((element) => (sum += element.score));
+          const averageScore = sum / totalLevels;
+
+          achievement.score = averageScore;
+          await achievement.save();
         }
       }
     }

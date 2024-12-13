@@ -68,6 +68,7 @@ export const addPlan = TryCatch(
 
 export const getAllPlans = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req;
     const plans = await Plans.find({})
       .select("_id title description distancePlan image isPremium category")
       .lean();
@@ -81,16 +82,30 @@ export const getAllPlans = TryCatch(
       const categoryKey = Object.keys(planCategoryEnums).find(
         (key) => planCategoryEnums[key] == plan.category.type
       );
+      plan.category.name = categoryKey;
+
       if (!acc[categoryKey]) {
         acc[categoryKey] = [];
       }
+
+      if (user.unitOfMeasure == measurementUnitEnums.MILES) {
+        plan = {
+          ...plan,
+          category: {
+            ...plan.category,
+            to: parseFloat((plan.category.to * 0.621371).toFixed(2)),
+            from: parseFloat((plan.category.from * 0.621371).toFixed(2)),
+          },
+        };
+      }
+
       acc[categoryKey].push(plan);
       return acc;
     }, {});
 
-    console.log("groupedPlans:::::", groupedPlans);
-
-    return SUCCESS(res, 200, undefined, { data: groupedPlans });
+    return SUCCESS(res, 200, undefined, {
+      data: { groupedData: groupedPlans },
+    });
   }
 );
 

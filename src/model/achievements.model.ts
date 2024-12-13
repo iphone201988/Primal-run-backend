@@ -5,7 +5,7 @@ const achievementSchema = new Schema<AchievementsModel>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User" },
     badgeId: { type: Schema.Types.ObjectId, ref: "Badge" },
-    score: { type: Number },
+    score: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

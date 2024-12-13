@@ -3,9 +3,11 @@ import User from "../model/user.model";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import Plans from "../model/plan.model";
-import { genderEnums } from "../utils/enum";
 import UserProgress from "../model/userProgress.model";
 import Stage from "../model/stage.model";
+import Badge from "../model/badge.model";
+import Achievements from "../model/achievements.model";
+import { Schema } from "mongoose";
 
 export const getUserById = (userId: string): Promise<UserModel> => {
   const user = User.findById(userId);
@@ -29,6 +31,7 @@ export const generateRandomJti = (length = 16) => {
 export const addPlansForUser = async (user: UserModel) => {
   const allPlans = await Plans.find({});
 
+  const promises = [];
   for (const plan of allPlans) {
     const userProgress = new UserProgress({
       userId: user._id,
@@ -53,8 +56,22 @@ export const addPlansForUser = async (user: UserModel) => {
     userProgress.unlockedStages.hardStagesForFemale = await getStages(
       plan.hardStagesForFemale
     );
-    await userProgress.save();
+
+    promises.push(userProgress.save());
   }
+
+  await Promise.all(promises);
+};
+
+export const addInitialAchievements = async (userId: any) => {
+  const allBadges = await Badge.find({});
+
+  const promises = [];
+  for (const badge of allBadges) {
+    promises.push(Achievements.create({ userId, badgeId: badge._id }));
+  }
+
+  await Promise.all(promises);
 };
 
 const getStages = async (stages: any) => {
