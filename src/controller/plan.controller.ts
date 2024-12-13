@@ -119,15 +119,15 @@ const getPlanById = TryCatch(
       )
       .populate(
         easyStages,
-        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
+        "badgeId title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
       )
       .populate(
         normalStages,
-        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
+        "badgeId title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
       )
       .populate(
         hardStages,
-        "title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
+        "badgeId title distance duration speed isPremium isSprint sprintCount sprintDistanceInMeter image level state"
       )
       .sort("level")
       .lean();

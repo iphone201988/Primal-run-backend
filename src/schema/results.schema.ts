@@ -4,7 +4,7 @@ import { resultStatus, resultType } from "../utils/enum";
 const saveResultsSchema = {
   body: Joi.object({
     planId: Joi.string()
-      .required()
+      .optional()
       .pattern(/^[0-9a-fA-F]{24}$/)
       .messages({
         "string.base": `Plan Id should be a type of text`,
@@ -13,13 +13,21 @@ const saveResultsSchema = {
         "any.required": `Plan Id is required.`,
       }),
     stageId: Joi.string()
-      .required()
+      .optional()
       .pattern(/^[0-9a-fA-F]{24}$/)
       .messages({
         "string.base": `Stage Id should be a type of text`,
         "string.empty": `Stage Id cannot be empty`,
         "string.pattern.base": `Stage Id must be a valid ObjectId`,
-        "any.required": `Stage Id is required.`,
+      }),
+    badgeId: Joi.string()
+      .required()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .messages({
+        "string.base": `Badge Id should be a type of text`,
+        "string.empty": `Badge Id cannot be empty`,
+        "string.pattern.base": `Badge Id must be a valid ObjectId`,
+        "any.required": `Badge Id is a mandatory field`,
       }),
     distance: Joi.number().required().messages({
       "number.base": "Distance must be a number.",
@@ -45,19 +53,19 @@ const saveResultsSchema = {
         "any.required": "Result type is a mandatory field.",
         "any.only": "Invalid value for Result type.",
       }),
-    badgeId: Joi.string()
-      .pattern(/^[0-9a-fA-F]{24}$/)
-      .when("resultType", {
-        is: resultType.FREE_RUN,
-        then: Joi.required(),
-        otherwise: Joi.optional(),
-      })
-      .messages({
-        "string.base": `Badge Id should be a type of text.`,
-        "string.empty": `Badge Id cannot be empty.`,
-        "string.pattern.base": `Badge Id must be a valid ObjectId.`,
-        "any.required": `Badge Id is required when resultType is 2.`,
-      }),
+    // badgeId: Joi.string()
+    //   .pattern(/^[0-9a-fA-F]{24}$/)
+    //   .when("resultType", {
+    //     is: resultType.FREE_RUN,
+    //     then: Joi.required(),
+    //     otherwise: Joi.optional(),
+    //   })
+    //   .messages({
+    //     "string.base": `Badge Id should be a type of text.`,
+    //     "string.empty": `Badge Id cannot be empty.`,
+    //     "string.pattern.base": `Badge Id must be a valid ObjectId.`,
+    //     "any.required": `Badge Id is required when resultType is Free Run.`,
+    //   }),
     resultStatus: Joi.number()
       .valid(...Object.values(resultStatus))
       .required()

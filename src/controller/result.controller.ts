@@ -32,19 +32,35 @@ export const saveResults = TryCatch(
       resultType,
     } = req.body;
 
-    const results = await Results.find({
-      userId,
-      planId,
-      isBestScore: true,
-    });
-    // TODO: Based on the max score per stage
-    console.log("results:::::", results);
+    const files = getFiles(req, ["videoLink"]);
 
+    // FREE RUN
+    if (resultType == 2) {
+      await Results.create({
+        userId,
+        badgeId,
+        distance,
+        duration,
+        averageSpeed,
+        score,
+        resultStatus,
+        resultType,
+        videoLink: files.videoLink[0],
+      });
+
+      return SUCCESS(res, 201, "Result saved successfully");
+    }
+
+    // const results = await Results.find({
+    //   userId,
+    //   planId,
+    //   isBestScore: true,
+    // });
+    // // TODO: Based on the max score per stage
+    // console.log("results:::::", results);
 
     const plan = await getPlanById(planId);
     const stage = await getPlanStageById(stageId);
-
-    const files = getFiles(req, ["videoLink"]);
 
     const previousResult = await Results.findOne({
       userId,
@@ -103,6 +119,7 @@ export const saveResults = TryCatch(
 
       const userProgress = await UserProgress.findOne({ userId });
 
+      // Unlocking next stage
       if (nextStage) {
         const isExists = userProgress.unlockedStages[key].find(
           (id: any) => id.toString() == nextStage._id.toString()
@@ -133,7 +150,7 @@ export const saveResults = TryCatch(
           key = "hardStagesForFemale";
         }
         await unlockNextLevelOfStages(
-          gameTypeEnums.NORMAL,
+          gameTypeEnums.HARD,
           user.gender,
           key,
           userProgress
